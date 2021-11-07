@@ -7,10 +7,13 @@
 char buffer[MAX];
 
 void print_at_command_data(){
+
     printf("AT_COMMANDS read: \n");
-    for(int i = 0 ;i < date.line_count; i++)
+    for(int i = 0 ;i < date.line_count; i++){
             printf("%s \n", date.data[i]);
+    }
 }
+
 int main(int argc, char* argv[]) {
    
 	//int  aux;
