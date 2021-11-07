@@ -1,3 +1,5 @@
+//de compilat: gcc -o tede main.c parser.c
+
 #include<stdio.h>
 #include<stdlib.h>
 #include <string.h>
