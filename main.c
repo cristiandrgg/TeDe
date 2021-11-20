@@ -35,10 +35,10 @@ int main(int argc, char* argv[]) {
 
         int n = fread(buffer, 1, MAX, f);
         buffer[n]='\0';
-        int status=at_command_parse(buffer);
+        int status = at_command_parse(buffer);
         print_at_command_data();
 
-        if(status==2){
+        if(status!=1){
             printf("NOT OK! \n");
         }
         else if(status==1)
