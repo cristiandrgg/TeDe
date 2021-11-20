@@ -1,8 +1,10 @@
+//https://github.com/cristiandrgg/TeDe
 //de compilat: gcc -o tede main.c parser.c
 
 #include<stdio.h>
 #include<stdlib.h>
 #include <string.h>
+
 #include "parser.h"
 
 #define MAX 32768
@@ -11,16 +13,13 @@ char buffer[MAX];
 void print_at_command_data(){
 
     printf("AT_COMMANDS read: \n");
-    for(int i = 0 ;i < date.line_count; i++){
+    for(int i = 0; i < date.line_count; i++){
             printf("%s \n", date.data[i]);
     }
 }
 
 int main(int argc, char* argv[]) {
    
-	//int  aux;
-	//char ch;
-
     if( argc < 2 ){
         printf("\n Numar insuficient de argumente. \n");
     }
@@ -35,15 +34,19 @@ int main(int argc, char* argv[]) {
 
         int n = fread(buffer, 1, MAX, f);
         buffer[n]='\0';
+
         int status = at_command_parse(buffer);
-        print_at_command_data();
+        //print_at_command_data();
 
         if(status!=1){
+            print_at_command_data();
             printf("NOT OK! \n");
         }
         else if(status==1)
         {
+            print_at_command_data();
             printf("OK! \n");
+            
             
         }
     fclose(f);

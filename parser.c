@@ -1,14 +1,12 @@
+//https://github.com/cristiandrgg/TeDe
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <stdbool.h>
-
 
 #include "parser.h"
 
 AT_COMMAND_DATA date;
-
-static uint8_t Case = 0;
 
 STATE_MACHINE_RETURN_VALUE at_command_parse(char* char_crt){
 
@@ -16,10 +14,13 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char* char_crt){
 	uint8_t lines = 0;
 	uint8_t line_size = 0;
 	uint8_t data_index;
-	//static uint8_t char_crt;
+
 	int index_col = 0;
-	//date.status = false;
+
 	char *start=0;
+
+	static uint32_t offset = 0;
+	char_crt += offset;
 
 	while(char_crt){
 
@@ -236,12 +237,24 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char* char_crt){
 					{
 						if(c == 10){		//LF
 							Case = 16;
+							char_crt++;
+
+							 if (lines < AT_COMMAND_MAX_LINES){
+                                memset(date.data[lines], '\0', AT_COMMAND_MAX_LINE_SIZE);
+                                memcpy(date.data[lines], start, line_size);
+                                //printf("Copied: %s \n", date.data[lines]);
+                                line_size = 0;
+                                lines++;
+                            }
+
+							/*
 							memset(date.data[data_index], '\0', AT_COMMAND_MAX_LINE_SIZE);
 							memcpy(date.data[data_index++], start, line_size);
 							printf("Copied: %s \n", date.data[data_index-1]);
 							char_crt++;
 							line_size++;
 							lines++;
+							*/
 						}
 						else{
 							date.status = STATE_MACHINE_READY_WITH_ERROR;
@@ -297,6 +310,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char* char_crt){
 					}
 			}
 
+			offset++;
 			date.line_count=lines;
 
 		}
