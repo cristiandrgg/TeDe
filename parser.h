@@ -1,5 +1,6 @@
+// https://github.com/cristiandrgg/TeDe
+
 #include <stdint.h>
-//#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -9,7 +10,6 @@
 typedef struct{
 	uint8_t data[AT_COMMAND_MAX_LINES][AT_COMMAND_MAX_LINE_SIZE];
 	uint8_t line_count;
-	//bool status;
 	uint8_t status;	
 }AT_COMMAND_DATA;
 
