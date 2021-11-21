@@ -8,31 +8,54 @@
 
 AT_COMMAND_DATA date;
 
-STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
+STATE_MACHINE_RETURN_VALUE at_command_parse(char* char_crt){
 
 	if(date.line_count >= AT_COMMAND_MAX_LINE_SIZE){
 		return STATE_MACHINE_READY_WITH_ERROR;
 	}
 
-	//printf(" Nod: %d ", date.nod);
-	//printf(" AT_COMMAND_PARSE: %c \n", char_crt);	
+	//static uint8_t Case = 0;
+	uint8_t lines = 0;
+	uint8_t line_size = 0;
+	uint8_t data_index;
+
+	int index_col = 0;
+
+	char *start=0;
+
+	static uint32_t offset = 0;
+	char_crt += offset;
+
+	printf("Current node: %d\n",date.nod);
+	printf("at_command_parse character: %c\n",char_crt);
+
+	//while(char_crt){
+
+		if((lines >= AT_COMMAND_MAX_LINES) && (line_size >= AT_COMMAND_MAX_LINE_SIZE))
+			{
+				date.nod = STATE_MACHINE_READY_WITH_ERROR;
+				return date.nod;
+			}
+
+		//for(;;){	
 		
-			//char c = char_crt;
+			char c = *char_crt;
 
 			switch(date.nod){	// date.nod -> Case -> starea
 				
 					case 0:
 					{
-						if(char_crt == 13){		//CR -> incepe transmisia
+						if(c == 13){		//CR -> incepe transmisia
 							date.nod = 1;
 							return STATE_MACHINE_NOT_READY;
 						}
-						
+						/*
 						else if (char_crt == '+'){
-							date.nod=144;			//un fel de stare intermediara
+							printf("aici\n");
+							date.nod=7;
 							return STATE_MACHINE_NOT_READY;
 						}
-						
+						*/
 						else{
 							return STATE_MACHINE_READY_WITH_ERROR;
 						}
@@ -41,9 +64,9 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 1:
 					{
-						if(char_crt == 10){		//LF
+						if(c == 10){		//LF
 							date.nod = 2;
-							return STATE_MACHINE_NOT_READY;
+							char_crt++;
 						}
 						else{
 							return STATE_MACHINE_READY_WITH_ERROR;
@@ -53,16 +76,16 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 2:
 					{
-						if(char_crt == 'O'){				
+						if(c == 'O'){				
 							date.nod = 3;
 							return STATE_MACHINE_NOT_READY;
 						}
-						else if(char_crt == 'E'){	
+						else if(c == 'E'){	
 							date.nod = 7;
 							return STATE_MACHINE_NOT_READY;
 						}
-						else if(char_crt == '+'){	
-							date.nod = 144;			//un fel de stare intermediara
+						else if(c == '+'){	
+							date.nod = 144;			//un fel de stare intermediara sa fac niste operatii in ea
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
@@ -73,7 +96,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 3:
 					{
-						if(char_crt == 'K'){	
+						if(c == 'K'){	
 							date.nod = 4;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -85,7 +108,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 4:
 					{
-						if(char_crt == 13){		//CR
+						if(c == 13){		//CR
 							date.nod = 5;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -97,7 +120,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 5:
 					{
-						if(char_crt == 10){		//LF
+						if(c == 10){		//LF
 							date.nod = 6;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -114,7 +137,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 7:
 					{
-						if(char_crt == 'R'){	
+						if(c == 'R'){	
 							date.nod = 8;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -126,7 +149,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 8:
 					{
-						if(char_crt == 'R'){	
+						if(c == 'R'){	
 							date.nod = 9;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -138,7 +161,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 9:
 					{
-						if(char_crt == 'O'){	
+						if(c == 'O'){	
 							date.nod = 10;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -150,7 +173,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 10:
 					{
-						if(char_crt == 'R'){	
+						if(c == 'R'){	
 							date.nod = 11;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -162,7 +185,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 11:
 					{
-						if(char_crt == 13){		//CR
+						if(c == 13){		//CR
 							date.nod = 12;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -174,7 +197,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 12:
 					{
-						if(char_crt == 10){		//LF
+						if(c == 10){		//LF
 							date.nod = 13;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -217,7 +240,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 								return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						
-						else if(char_crt == 13){	//CR
+						else if(c == 13){	//CR
 							//terminator '\0'
 							date.nod = 15;
 							return STATE_MACHINE_NOT_READY;
@@ -230,7 +253,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 15:
 					{
-						if(char_crt == 10){		//LF
+						if(c == 10){		//LF
 							date.nod = 16;
 							
 							/*
@@ -265,11 +288,11 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 16:
 					{
-						if(char_crt == 13){		//CR
+						if(c == 13){		//CR
 							date.nod = 17;
 							return STATE_MACHINE_NOT_READY;
 						}
-						else if(char_crt == '+'){
+						else if(c == '+'){
 							date.nod = 144;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -281,7 +304,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 17:
 					{
-						if(char_crt == 10){		//LF
+						if(c == 10){		//LF
 							date.nod = 18;
 							return STATE_MACHINE_NOT_READY;
 						}
@@ -293,11 +316,11 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 					
 					case 18:
 					{
-						if(char_crt == 'E'){		
+						if(c == 'E'){		
 							date.nod = 7;
 							return STATE_MACHINE_NOT_READY;
 						}
-						else if(char_crt == 'O'){
+						else if(c == 'O'){
 							date.nod = 3;
 							return STATE_MACHINE_NOT_READY;
 						}
