@@ -2,9 +2,10 @@
 
 //de compilat: gcc -o tede main.c parser.c
 
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "parser.h"
 
@@ -28,7 +29,7 @@ int main(int argc, char* argv[]) {
    
     char c;
     char charr;
-    int x;
+    bool x = true;
 
     if(argc < 2){
         printf("\n Numar insuficient de argumente. \n");
@@ -93,7 +94,7 @@ int main(int argc, char* argv[]) {
                 case STATE_MACHINE_READY_WITH_ERROR:
                 {
                     printf("\n NOT OK / ERROR \n");
-                    x=0;
+                    x=false;
                     break;
                 }
             }
