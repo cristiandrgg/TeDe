@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 		}
 
         c = fgetc(f);
-        x = 1;
+        x = true;
         reset();
         STATE_MACHINE_RETURN_VALUE status = at_command_parse(c);
 
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
 
         while(x){   
             if(c==EOF){
-                x=0;
+                x = false;
             }
 
             switch(status){
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
                 case STATE_MACHINE_READY_WITH_ERROR:
                 {
                     printf("\n NOT OK / ERROR \n");
-                    x=false;
+                    x = false;
                     break;
                 }
             }
