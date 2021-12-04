@@ -31,6 +31,20 @@ int main(int argc, char* argv[]) {
     char charr;
     bool x = true;
 
+    int flags[20];
+    int flag_coded[15] = {0,0,0,1,1,0,0,0,0,0,0,1,0,1,0};
+    int i_flag;
+
+    if(argc>=3){
+        for(int i = 2; i < argc; i++) 
+            flags[i-2]=atoi(argv[i]); 
+    }
+    else{
+        for(int i = 0; i < 15; i++)
+            flags[i]=flag_coded[i];
+    }
+
+
     if(argc < 2){
         printf("\n Numar insuficient de argumente. \n");
     }
@@ -46,7 +60,7 @@ int main(int argc, char* argv[]) {
         c = fgetc(f);
         x = true;
         reset();
-        STATE_MACHINE_RETURN_VALUE status = at_command_parse(c);
+        STATE_MACHINE_RETURN_VALUE status = at_command_parse(c, flags[i_flag]);
 
         /*
         int n = fread(buffer, 1, MAX, f);
@@ -69,7 +83,7 @@ int main(int argc, char* argv[]) {
         */
 
         while(x){   
-            if(c==EOF){
+            if((c==EOF) || (charr==EOF)){
                 x = false;
             }
 
@@ -79,22 +93,45 @@ int main(int argc, char* argv[]) {
                 { 
                     c = fgetc(f);
                     charr = c;
-                    status = at_command_parse(c);
+                    status = at_command_parse(c,  flags[i_flag]);
                     break;
                 }
 
                 case STATE_MACHINE_READY_OK:
                 {
-                    printf("\n OK! \n");
                     print_at_command_data();
+                    printf("\n OK! \n");
+                    
                     reset();
-                    status=at_command_parse(charr);
+                    i_flag = i_flag + 1;
+                    status=at_command_parse(charr, flags[i_flag]);
                     break;
                 }
                 case STATE_MACHINE_READY_WITH_ERROR:
                 {
+                    print_at_command_data();
                     printf("\n NOT OK / ERROR \n");
-                    x = false;
+                    
+                    reset();
+                    status=at_command_parse(charr, flags[i_flag]);
+                    i_flag = i_flag +1;
+                    break;
+                }
+                case STATE_MACHINE_NOT_READY_WITH_ERROR:
+                {
+                    print_at_command_data();
+                    printf("\n NOT OK / ERROR \n");
+                   
+                    x=false;
+                    break;
+                }
+                case STATE_MACHINE_LINES:
+                {
+                    print_at_command_data();
+                    printf("\n S-a depasit nr de linii !! \n");
+                    
+                    reset();
+                    status=at_command_parse(charr,flags[i_flag]);
                     break;
                 }
             }

@@ -8,10 +8,10 @@
 
 AT_COMMAND_DATA date;
 
-STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
+STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt, int flag){
 
 	if(date.line_count >= AT_COMMAND_MAX_LINE_SIZE){
-		return STATE_MACHINE_READY_WITH_ERROR;
+		return STATE_MACHINE_LINES;		//return STATE_MACHINE_READY_WITH_ERROR;
 	}
 
 	//printf(" Nod: %d ", date.nod);
@@ -34,7 +34,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 						}
 						
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -46,7 +46,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -66,7 +66,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -78,7 +78,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -90,7 +90,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -102,7 +102,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -119,7 +119,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -131,7 +131,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -143,7 +143,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -155,7 +155,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -167,7 +167,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -179,14 +179,14 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 13:	//nod FINAL pt ERROR
 					{
-						return STATE_MACHINE_READY_WITH_ERROR;
+						return STATE_MACHINE_READY_WITH_ERROR;		//doar aici ramane STATE_MACHINE_READY_WITH_ERROR;
 					}
 					
 					case 144:		//un fel de stare intermediara
@@ -214,7 +214,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 								return STATE_MACHINE_NOT_READY;
 							}
 							else
-								return STATE_MACHINE_READY_WITH_ERROR;
+								return STATE_MACHINE_NOT_READY_WITH_ERROR;		
 						}
 						
 						else if(char_crt == 13){	//CR
@@ -223,7 +223,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -258,7 +258,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 						
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -274,7 +274,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -286,7 +286,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
@@ -302,7 +302,7 @@ STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt){
 							return STATE_MACHINE_NOT_READY;
 						}
 						else{
-							return STATE_MACHINE_READY_WITH_ERROR;
+							return STATE_MACHINE_NOT_READY_WITH_ERROR;
 						}
 						break;
 					}
