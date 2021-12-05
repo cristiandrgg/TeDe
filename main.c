@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     bool x = true;
 
     int flags[20];
-    int flag_coded[15] = {0,0,0,1,1,0,0,0,0,0,0,1,0,1,0};
+    int comm[15] = {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0};
     int i_flag;
 
     if(argc>=3){
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     }
     else{
         for(int i = 0; i < 15; i++)
-            flags[i]=flag_coded[i];
+            flags[i]=comm[i];
     }
 
 
@@ -126,6 +126,7 @@ int main(int argc, char* argv[]) {
                     break;
                 }
                 case STATE_MACHINE_LINES:
+                
                 {
                     print_at_command_data();
                     printf("\n S-a depasit nr de linii !! \n");
