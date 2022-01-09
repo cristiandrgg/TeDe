@@ -9,13 +9,16 @@
 
 #include "parser.h"
 
-#define MAX 32768
+//#define MAX 32768
+#define MAX 500000
 char buffer[MAX];
 
+/*
 void reset(){
-    date.nod = 0;
+    date.status = 0;
     date.line_count = 0;
 }
+*/
 
 void print_at_command_data(){
 
@@ -25,25 +28,16 @@ void print_at_command_data(){
     }
 }
 
-int main(int argc, char* argv[]) {
-   
-    char c;
-    char charr;
-    bool x = true;
 
-    int flags[20];
-    int comm[15] = {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0};
-    int i_flag;
+int main(int argc, char* argv[]){
 
-    if(argc>=3){
-        for(int i = 2; i < argc; i++) 
-            flags[i-2]=atoi(argv[i]); 
-    }
-    else{
-        for(int i = 0; i < 15; i++)
-            flags[i]=comm[i];
-    }
+    //char c;
+    //char charr;
+    //bool x = true;
+    int status;
 
+    uint8_t command[] = {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0};
+    int i = 0;
 
     if(argc < 2){
         printf("\n Numar insuficient de argumente. \n");
@@ -51,39 +45,37 @@ int main(int argc, char* argv[]) {
 	else{
 
         FILE *f;
-        f = fopen(argv[1], "rb");
+        f=fopen(argv[1], "rb");
 
         if (f == NULL) { 
 			perror("\n Fisierul nu este valid. \n"); 
 		}
 
-        c = fgetc(f);
-        x = true;
-        reset();
-        STATE_MACHINE_RETURN_VALUE status = at_command_parse(c, flags[i_flag]);
+        int x = fread(buffer, 1, MAX, f);
+        buffer[x]='\0';
 
-        /*
-        int n = fread(buffer, 1, MAX, f);
-        buffer[n]='\0';
-        */
-
-        //int status = at_command_parse(buffer);
-        //print_at_command_data();
-
-        /*
-        if(status!=1){
-            print_at_command_data();
-            printf("\n NOT OK / ERROR \n");
-        }
-        else if(status==1)
-        {
-            print_at_command_data();
+        for(;;){
+            status = at_command_parse(buffer, command[i]);
+            if(status!=1){
+                break;
+            }
+            i++;
             printf("\n OK! \n");
+            print_at_command_data();
         }
-        */
 
-        while(x){   
-            if((c==EOF) || (charr==EOF)){
+        if(status == 2)
+            printf("\n NOT OK / ERROR \n");
+        fclose(f);
+        return 0;
+
+    }
+}
+
+
+/*
+  while(x){   
+            if(c==EOF){
                 x = false;
             }
 
@@ -93,46 +85,22 @@ int main(int argc, char* argv[]) {
                 { 
                     c = fgetc(f);
                     charr = c;
-                    status = at_command_parse(c,  flags[i_flag]);
+                    status = at_command_parse(c);
                     break;
                 }
 
                 case STATE_MACHINE_READY_OK:
                 {
-                    print_at_command_data();
                     printf("\n OK! \n");
-                    
+                    print_at_command_data();
                     reset();
-                    i_flag = i_flag + 1;
-                    status=at_command_parse(charr, flags[i_flag]);
+                    status=at_command_parse(charr);
                     break;
                 }
                 case STATE_MACHINE_READY_WITH_ERROR:
                 {
-                    print_at_command_data();
                     printf("\n NOT OK / ERROR \n");
-                    
-                    reset();
-                    status=at_command_parse(charr, flags[i_flag]);
-                    i_flag = i_flag +1;
-                    break;
-                }
-                case STATE_MACHINE_NOT_READY_WITH_ERROR:
-                {
-                    print_at_command_data();
-                    printf("\n NOT OK / ERROR \n");
-                   
-                    x=false;
-                    break;
-                }
-                case STATE_MACHINE_LINES:
-                
-                {
-                    print_at_command_data();
-                    printf("\n S-a depasit nr de linii !! \n");
-                    
-                    reset();
-                    status=at_command_parse(charr,flags[i_flag]);
+                    x = false;
                     break;
                 }
             }
@@ -142,3 +110,4 @@ int main(int argc, char* argv[]) {
     }
     return 0;
 }
+*/

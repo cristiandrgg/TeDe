@@ -8,307 +8,316 @@
 
 AT_COMMAND_DATA date;
 
-STATE_MACHINE_RETURN_VALUE at_command_parse(char char_crt, int flag){
+static uint8_t Case = 0;
 
-	if(date.line_count >= AT_COMMAND_MAX_LINE_SIZE){
-		return STATE_MACHINE_LINES;		//return STATE_MACHINE_READY_WITH_ERROR;
-	}
+STATE_MACHINE_RETURN_VALUE at_command_parse(char* char_crt,  uint8_t special_command){
 
-	//printf(" Nod: %d ", date.nod);
-	//printf(" AT_COMMAND_PARSE: %c \n", char_crt);	
+	static uint8_t Case = 0;
+	static uint32_t cnt = 0;
+	uint8_t lines = 0;
+	uint8_t line_size = 0;
+
+	int index_col = 0;
+	char *start=0;
+
+	char_crt = char_crt + cnt;
+
+	while(*char_crt != '\0'){
+
+		if((line_size >= AT_COMMAND_MAX_LINE_SIZE) || (lines >= AT_COMMAND_MAX_LINES))
+				return STATE_MACHINE_READY_WITH_ERROR;
+			
+		for(;;){
 		
-			//char c = char_crt;
+			char c = *char_crt;
 
-			switch(date.nod){	// date.nod -> Case -> starea
+			switch(Case){		//Case -> starea
 				
 					case 0:
 					{
-						if(char_crt == 13){		//CR -> incepe transmisia
-							date.nod = 1;
-							return STATE_MACHINE_NOT_READY;
-						}
-						
-						else if (char_crt == '+'){
-							date.nod=144;			//un fel de stare intermediara
-							return STATE_MACHINE_NOT_READY;
-						}
-						
+						if(c == 13){		//CR -> incepe transmisia
+								Case = 1;
+								char_crt++;
+							}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+								return STATE_MACHINE_READY_WITH_ERROR;
 						}
-						break;
+							break;
 					}
 					
 					case 1:
 					{
-						if(char_crt == 10){		//LF
-							date.nod = 2;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 10){			//LF
+							 if(!special_command){
+                                Case = 2;
+                            }
+						    else{
+						        Case = 14;
+                                start = char_crt + 1;
+                            }
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 2:
 					{
-						if(char_crt == 'O'){				
-							date.nod = 3;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 'O'){
+							Case = 3;
+							char_crt++;
 						}
-						else if(char_crt == 'E'){	
-							date.nod = 7;
-							return STATE_MACHINE_NOT_READY;
+
+						else if(c == 'E'){
+							Case = 7;
+							char_crt++;
 						}
-						else if(char_crt == '+'){	
-							date.nod = 144;			//un fel de stare intermediara
-							return STATE_MACHINE_NOT_READY;
+
+						else if(c == '+'){	
+							Case = 14;
+							char_crt++;
+                            start = char_crt;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 3:
 					{
-						if(char_crt == 'K'){	
-							date.nod = 4;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 'K'){
+							Case = 4;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 4:
 					{
-						if(char_crt == 13){		//CR
-							date.nod = 5;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 13){		//CR
+							Case = 5;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 5:
-					{
-						if(char_crt == 10){		//LF
-							date.nod = 6;
-							return STATE_MACHINE_NOT_READY;
+					{	
+						if(c == 10){		//LF
+							Case = 6;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
-					case 6:	//nod FINAL
+					case 6:	
 					{
+					    Case = 0;
 						return STATE_MACHINE_READY_OK;
 					}
 					
 					case 7:
 					{
-						if(char_crt == 'R'){	
-							date.nod = 8;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 'R'){
+							Case = 8;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 8:
 					{
-						if(char_crt == 'R'){	
-							date.nod = 9;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 'R'){
+							Case = 9;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 9:
 					{
-						if(char_crt == 'O'){	
-							date.nod = 10;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 'O'){
+							Case = 10;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 10:
 					{
-						if(char_crt == 'R'){	
-							date.nod = 11;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 'R'){
+							Case = 11;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 11:
 					{
-						if(char_crt == 13){		//CR
-							date.nod = 12;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 13){		//CR
+							Case = 12;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 12:
 					{
-						if(char_crt == 10){		//LF
-							date.nod = 13;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 10){		//LF
+							Case = 13;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
-					case 13:	//nod FINAL pt ERROR
+					case 13:
 					{
-						return STATE_MACHINE_READY_WITH_ERROR;		//doar aici ramane STATE_MACHINE_READY_WITH_ERROR;
+                        Case = 0;
+						return STATE_MACHINE_READY_OK;
 					}
 					
-					case 144:		//un fel de stare intermediara
-					{
-						date.nod=14;
-						date.data[date.line_count][0] = char_crt;
-						date.data[date.line_count][1] = '\0';
-						return STATE_MACHINE_NOT_READY;
-					}
-
 					case 14:
 					{
-						if(char_crt > 30 && char_crt < 127){
-
-							date.nod = 14;
-							int i = 0;
-
-							for(i=0; date.data[date.line_count][i]!='\0'; i++){
-								
-							}
-							if(i<AT_COMMAND_MAX_LINE_SIZE-1)
-							{
-								date.data[date.line_count][i] = char_crt;
-								date.data[date.line_count][i+1] = '\0';
-								return STATE_MACHINE_NOT_READY;
-							}
-							else
-								return STATE_MACHINE_NOT_READY_WITH_ERROR;		
+						if(c > 31 && c < 127){
+							Case = 14;
+							char_crt++;
+							line_size++;
 						}
-						
-						else if(char_crt == 13){	//CR
-							//terminator '\0'
-							date.nod = 15;
-							return STATE_MACHINE_NOT_READY;
+						else if(c == 13){		//CR
+							Case = 15;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 15:
 					{
-						if(char_crt == 10){		//LF
-							date.nod = 16;
-							
-							/*
-							char_crt++;
+						if(c == 10){		//LF
 
-							 if (lines < AT_COMMAND_MAX_LINES){
+							Case = 16;
+                            char_crt++;
+
+                            if (lines < AT_COMMAND_MAX_LINES){
                                 memset(date.data[lines], '\0', AT_COMMAND_MAX_LINE_SIZE);
                                 memcpy(date.data[lines], start, line_size);
-                                //printf("Copied: %s \n", date.data[lines]);
-                                line_size = 0;
                                 lines++;
+								line_size = 0;
                             }
-
-							/*
-							memset(date.data[data_index], '\0', AT_COMMAND_MAX_LINE_SIZE);
-							memcpy(date.data[data_index++], start, line_size);
-							printf("Copied: %s \n", date.data[data_index-1]);
-							char_crt++;
-							line_size++;
-							lines++;
-							*/
-
-							date.line_count++;
-							return STATE_MACHINE_NOT_READY;
-						
-						}
-						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+                        }
+						else
+                        {
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 16:
 					{
-						if(char_crt == 13){		//CR
-							date.nod = 17;
-							return STATE_MACHINE_NOT_READY;
-						}
-						else if(char_crt == '+'){
-							date.nod = 144;
-							return STATE_MACHINE_NOT_READY;
-						}
-						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
-						}
+					    if(!special_command)
+					    {
+                            if(c == 13)		//CR
+                            {
+                                Case = 17;
+                                char_crt++;
+                            }
+                            else if(c == '+'){
+                                Case = 14;
+                                char_crt++;
+                                start = char_crt;
+                            }
+                            else
+                            {
+                                return STATE_MACHINE_READY_WITH_ERROR;
+                            }
+					    }
+					    else
+                        {
+					        if(c == 13)		//CR
+                            {
+                                Case = 17;
+                                char_crt++;
+                            }
+                        }
+
 						break;
 					}
 					
 					case 17:
 					{
-						if(char_crt == 10){		//LF
-							date.nod = 18;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 10){		//LF
+							Case = 18;
+                            char_crt++;
 						}
-						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+						else
+                        {
+                            return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
 					
 					case 18:
 					{
-						if(char_crt == 'E'){		
-							date.nod = 7;
-							return STATE_MACHINE_NOT_READY;
+						if(c == 'E'){
+							Case = 7;
+							char_crt++;
 						}
-						else if(char_crt == 'O'){
-							date.nod = 3;
-							return STATE_MACHINE_NOT_READY;
+						else if(c == 'O'){
+							Case = 3;
+							char_crt++;
 						}
 						else{
-							return STATE_MACHINE_NOT_READY_WITH_ERROR;
+							return STATE_MACHINE_READY_WITH_ERROR;
 						}
 						break;
 					}
+					default:
+                    {
+                        return STATE_MACHINE_NOT_READY;
+                    }
 			}
+
+			date.line_count = lines;
+			cnt++;
 
 		}
 
+	}
+
+	return 0;
+
+}
 	
 
